@@ -1,0 +1,16 @@
+{ 
+  "name": "fetch-festa",
+  "version": "1.0.0",
+  "description": "fetch festa events as json",
+  "type": "module",
+  "main": "module.js",
+  "keywords": [
+    "festa",
+    "events"
+  ],
+  "author": "b_g",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^22.15.0"
+  }
+}
