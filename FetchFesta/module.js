@@ -35,4 +35,36 @@ const fetchFesta = async () => {
   return output;
 };
 
-export { fetchFesta };
+const fetchFestaDetail = async (eventId) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(`https://festa.io/events/${eventId}`, { waitUntil: 'networkidle2' });
+
+  const output = await page.evaluate(() => {
+    let output = {};
+    const info = [...(document.querySelector(".PrimaryEventInfo__Wrapper-sc-86u3sj-0").children)];
+    const detail = [...(document.querySelector(".UserContentArea-sc-1w8buon-0"))];
+    output["title"] = info[0].innerHTML;
+    output["where"] = info[1].innerHTML;
+    output["place"] = document.querySelector(".LocationInfo__Address-sc-1lbdfrz-4").innerHTML;
+    output["when"] = [...(info[4])][0];
+    output["who"] = [...(info[5])][1].href;
+    output["img"] = document.querySelector(".EventInfoPage__MainImage-sc-1ya0yur-2").src;
+    output["detail"] = "";
+    detail.forEach((p) => {
+      if (!p.innerHTML.includes("img")){
+        output["detail"] += p.innerHTML;
+      }
+    });
+    output["map"] = document.querySelector(".LocationInfo__MapWrapper-sc-1lbdfrz-1").lastChild.src;
+    output["until"] = document.querySelector(".tickets__IconText-sc-1d0zp6o-7").lastChild.datetime;
+
+    return output;
+  });
+
+  await browser.close();
+
+  return output;
+}
+
+export { fetchFesta, fetchFestaDetail };
