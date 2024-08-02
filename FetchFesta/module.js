@@ -1,3 +1,5 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 const puppeteer = require('puppeteer');
 
 const fetchFesta = async () => {
@@ -41,23 +43,24 @@ const fetchFestaDetail = async (eventId) => {
   await page.goto(`https://festa.io/events/${eventId}`, { waitUntil: 'networkidle2' });
 
   const output = await page.evaluate(() => {
-    let output = {};
+    const output = {};
     const info = [...(document.querySelector(".PrimaryEventInfo__Wrapper-sc-86u3sj-0").children)];
-    const detail = [...(document.querySelector(".UserContentArea-sc-1w8buon-0"))];
-    output["title"] = info[0].innerHTML;
-    output["where"] = info[1].innerHTML;
-    output["place"] = document.querySelector(".LocationInfo__Address-sc-1lbdfrz-4").innerHTML;
-    output["when"] = [...(info[4])][0];
-    output["who"] = [...(info[5])][1].href;
-    output["img"] = document.querySelector(".EventInfoPage__MainImage-sc-1ya0yur-2").src;
-    output["detail"] = "";
+    const detail = [...(document.querySelector(".UserContentArea-sc-1w8buon-0").children)];
+    output.title = info[0].innerHTML;
+    output.where = info[1].innerHTML;
+    output.place = document.querySelector(".LocationInfo__Address-sc-1lbdfrz-4").innerHTML;
+    output.when = [...(info[4].children)][1].innerHTML;
+    output.who = [...(info[5].children)][1].href;
+    output.img = document.querySelector(".EventInfoPage__MainImage-sc-1ya0yur-2").src;
+    let temp = "";
     detail.forEach((p) => {
       if (!p.innerHTML.includes("img")){
-        output["detail"] += p.innerHTML;
+        temp += p.innerHTML + "<br>";
       }
     });
-    output["map"] = document.querySelector(".LocationInfo__MapWrapper-sc-1lbdfrz-1").lastChild.src;
-    output["until"] = document.querySelector(".tickets__IconText-sc-1d0zp6o-7").lastChild.datetime;
+    output.detail = temp;
+    output.map = document.querySelector(".LocationInfo__MapWrapper-sc-1lbdfrz-1").lastChild.src;
+    output.until = document.querySelector(".tickets__IconText-sc-1d0zp6o-7").lastChild.datetime;
 
     return output;
   });
